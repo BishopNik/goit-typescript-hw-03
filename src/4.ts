@@ -24,7 +24,7 @@ interface IKey {
 }
 
 interface IPerson {
-	getKey(): number;
+	getKey(): Key;
 }
 class Key implements IKey {
 	private signature: number = Math.random();
@@ -37,13 +37,17 @@ class Key implements IKey {
 class Person implements IPerson {
 	constructor(private key: Key) {}
 
-	getKey(): number {
-		return this.key.getSignature();
+	getKey(): Key {
+		return this.key;
 	}
 }
 abstract class House {
 	protected door: boolean = false;
 	protected tenants: Person[] = [];
+
+	constructor(protected key: Key) {
+		this.key = key;
+	}
 
 	comeIn(person: Person): void {
 		if (this.door) {
@@ -55,11 +59,6 @@ abstract class House {
 }
 
 class MyHouse extends House {
-	constructor(protected key: Key) {
-		super();
-		this.key = key;
-	}
-
 	openDoor(key: Key) {
 		if (key.getSignature() === this.key.getSignature()) {
 			this.door = true;
