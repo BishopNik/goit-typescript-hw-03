@@ -23,54 +23,46 @@ interface IKey {
 	getSignature(): number;
 }
 
-interface House {
-	comeIn(person: Person): void;
-
-	openDoor(key: number): void;
+interface IPerson {
+	getKey(): number;
 }
 class Key implements IKey {
-	private signature: number;
-
-	constructor() {
-		this.signature = Math.random();
-	}
+	private signature: number = Math.random();
 
 	getSignature(): number {
 		return this.signature;
 	}
 }
 
-class Person extends Key {
-	private key: number;
-
-	constructor(key: Key) {
-		super();
-		this.key = key.getSignature();
-	}
+class Person implements IPerson {
+	constructor(private key: Key) {}
 
 	getKey(): number {
-		return this.key;
+		return this.key.getSignature();
 	}
 }
-
-class MyHouse implements House {
+abstract class House {
 	protected door: boolean = false;
-	protected key: number;
 	protected tenants: Person[] = [];
-
-	constructor(key: Key) {
-		this.key = key.getSignature();
-	}
-
-	openDoor(key: number) {
-		if (key === this.key) {
-			this.door = true;
-		}
-	}
 
 	comeIn(person: Person): void {
 		if (this.door) {
 			this.tenants.push(person);
+		}
+	}
+
+	abstract openDoor(key: Key): void;
+}
+
+class MyHouse extends House {
+	constructor(protected key: Key) {
+		super();
+		this.key = key;
+	}
+
+	openDoor(key: Key) {
+		if (key.getSignature() === this.key.getSignature()) {
+			this.door = true;
 		}
 	}
 }
